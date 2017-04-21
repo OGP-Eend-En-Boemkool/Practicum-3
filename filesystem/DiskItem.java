@@ -19,7 +19,7 @@ import filesystem.exception.*;
  * 
  * @author 	Tommy Messelis      
  * @version	2.2 - 2016
- * **
+ * 
  */
 public abstract class DiskItem {
 
