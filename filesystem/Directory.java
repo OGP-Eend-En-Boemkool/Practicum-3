@@ -6,6 +6,9 @@ import be.kuleuven.cs.som.annotate.*;
 
 import filesystem.exception.*;
 
+/**
+ * Joost is anders geaard!
+ */
 
 /**
  * A class of directories.
