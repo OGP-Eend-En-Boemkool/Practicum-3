@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path=""/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-<<<<<<< HEAD
 	<classpathentry kind="lib" path="C:/Users/Linde/workspace/AnnotationsDoclets.jar">
-=======
-	<classpathentry kind="lib" path="C:/Users/Gebruiker/Documents/Bachelor 2/Objectgericht programmeren/AnnotationsDoclets.jar">
->>>>>>> refs/heads/Lotte
 		<attributes>
 			<attribute name="javadoc_location" value="http://www.cs.kuleuven.be/books/OOPWithJava/doc/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="output" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
