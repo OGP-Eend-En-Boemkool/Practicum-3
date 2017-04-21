@@ -7,6 +7,7 @@ import be.kuleuven.cs.som.annotate.*;
 import filesystem.exception.*;
 
 /**
+/**
  * A class of directories.
  * @invar 	Each directory must have proper items registered in it.
  *        	| hasProperItems()
