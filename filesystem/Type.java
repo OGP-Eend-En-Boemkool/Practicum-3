@@ -14,7 +14,6 @@ import be.kuleuven.cs.som.annotate.*;
  * @author 	Tommy Messelis
  * @version	2.0 - 2015
  */
-///**
 @Value
 public enum Type {
 	

@@ -14,11 +14,7 @@ import be.kuleuven.cs.som.annotate.*;
  * @author 	Tommy Messelis
  * @version	3.1 - 2016       
  */
-/**
- * 
- * @author Linde
- *
- */
+
 public class File extends DiskItem{
 
     /**********************************************************
