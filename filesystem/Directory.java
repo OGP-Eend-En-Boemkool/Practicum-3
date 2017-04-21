@@ -6,7 +6,6 @@ import be.kuleuven.cs.som.annotate.*;
 
 import filesystem.exception.*;
 
-/** Ik werk nog steeds
 
 /**
  * A class of directories.
