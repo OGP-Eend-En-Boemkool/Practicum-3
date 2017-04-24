@@ -2,7 +2,7 @@ package filesystem;
 
 public class Link extends Item {
 	
-	public Link (String name, Boolean writable, DiskItem refDiskItem){
+	public Link (String name, DiskItem refDiskItem, Directory parentDir){
 		
 	}
 	

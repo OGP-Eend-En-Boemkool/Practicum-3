@@ -17,8 +17,8 @@ import filesystem.exception.*;
  * @invar   Each disk item must have a valid parent directory.
  *          | hasProperParentDirectory()
  * 
- * @author 	Tommy Messelis      
- * @version	2.2 - 2016
+ * @author 	Lotte en Linde    
+ * @version	1.0
  * 
  */
 public abstract class DiskItem extends Item{
@@ -47,7 +47,7 @@ public abstract class DiskItem extends Item{
 	 */
 	@Model
 	protected DiskItem(String name, boolean writable) {
-		setName(name);
+		super(name);
 		setWritable(writable);
 	}
 
@@ -99,27 +99,8 @@ public abstract class DiskItem extends Item{
 	@Model
 	protected DiskItem(Directory parent, String name, boolean writable) 
 			throws IllegalArgumentException, DiskItemNotWritableException {
-		if (parent == null) 
-			throw new IllegalArgumentException();
-		if (parent.isWritable() && isValidName(name) && parent.containsDiskItemWithName(name))
-			throw new IllegalArgumentException();
-		if (parent.isWritable() && !isValidName(name) && parent.containsDiskItemWithName(getDefaultName()))
-			throw new IllegalArgumentException();
-		if (!parent.isWritable()) 
-			throw new DiskItemNotWritableException(parent);
-
-		setName(name);
+		super(parent,name);
 		setWritable(writable);
-		setParentDirectory(parent);
-		try {
-			parent.addAsItem(this);
-		} catch (DiskItemNotWritableException e) {
-			//cannot occur
-			assert false;
-		} catch (IllegalArgumentException e) {
-			//cannot occur
-			assert false;
-		}
 	}
 
 	/**********************************************************
