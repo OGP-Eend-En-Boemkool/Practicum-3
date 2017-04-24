@@ -19,52 +19,7 @@ public class File extends DiskItem{
 
     /**********************************************************
      * Constructors
-     **********************************************************/
-
-    /**
-     * Initialize a new file with given name, size and writability.
-     *
-     * @param  	name
-     *         	The name of the new file.
-     * @param  	size
-     *         	The size of the new file.
-     * @param  	writable
-     *         	The writability of the new file.
-     * @param  	type
-     *         	The type of the new file.        
-     * 
-     * @pre		type is effective
-     * 			|type != null
-     * @effect 	The new file is a disk item with the given
-     *         	name and writability.
-     *         	| super(name,writable)
-     * @effect 	The new file has the given size
-     *          | setSize(size)
-     * @post   	The type of this new file is set to the given type.
-     *         	|new.getType() == type        
-     */
-    public File(String name, Type type, int size, boolean writable) {
-    	super(name,writable);
-        setSize(size);
-        this.type=type;
-    }
-
-    /**
-     * Initialize a new writable, empty file with given name.
-     *
-     * @param  name
-     *         The name of the new file.
-     * @param  type
-     *         The type of the new file.        
-     * 
-     * @effect This new file is initialized with the given name
-     *         and the given type, the new file is empty
-     *         and writable.
-     *         | this(name,type,0,true)
-     */
-    public File(String name, Type type) {
-        this(name,type,0,true);
-    }
+     **********************************************************
    
     /**
      * Initialize a new file with given parent directory, name,
