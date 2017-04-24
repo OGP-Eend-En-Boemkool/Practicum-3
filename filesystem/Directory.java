@@ -567,5 +567,110 @@ public class Directory extends DiskItem {
 		}
 	}
 	
+	/**********************************
+	 * root
+	 **********************************
+	
+	/**
+	 * Turns this disk item in a root disk item.
+	 * 
+	 * @post    The disk item is a root disk item.
+	 *          | new.isRoot()
+	 * @effect  If this disk item is not a root, this disk item is
+	 *          removed from its parent directory.
+	 *          | if (!isRoot())
+	 *          | then getParentDirectory().removeAsItem(this)
+	 * @effect  If this disk item is not a root, its modification time changed
+	 * 			| if (!isRoot())
+	 *          | then setModificationTime()         
+	 * 
+	 * @throws	DiskItemNotWritableException(this)
+	 * 			This disk item is not a root and it is not writable
+	 * 			| !isRoot() && !isWritable()
+	 * @throws	DiskItemNotWritable(getParentDirectory())	
+	 * 			This disk item is not a root and its parent directory is not writable
+	 * 			| !isRoot() && !getParentDirectory().isWritable()
+	 * @throws 	IllegalStateException
+	 * 			This disk item is terminated
+	 * 			| isTerminated()
+	 * @throws	DiskItemCannotBeRootException(this)
+	 * 			This disk item is not a directory (will never occur in this case)
+	 * 			| this.getClass() != Directory
+	 */ 
+	public void makeRoot()
+			throws DiskItemNotWritableException, DiskItemCannotBeRootException {
+		if ( isTerminated()) 
+			throw new IllegalStateException("Diskitem is terminated!");
+		if (!isRoot()) {
+			if (!isWritable()) 
+				throw new DiskItemNotWritableException(this);
+			if(!getParentDirectory().isWritable())
+				throw new DiskItemNotWritableException(getParentDirectory());
+
+			Directory dir = getParentDirectory();
+			setParentDirectory(null); 
+			//this item is now in a raw state
+			dir.removeAsItem(this);
+			setModificationTime();
+		}
+	}
+
+	/**
+	 * Check whether this item is a root item.
+	 * 
+	 * @return  True if this item has a non-effective parent directory;
+	 *          false otherwise.
+	 *        	| result == (getParentDirectory() == null)
+	 */
+	@Raw
+	public boolean isRoot() {
+		return getParentDirectory() == null;
+	}
+	
+	/*********************************
+	 * writable
+	 *********************************
+	
+	/**
+	 * Set the writability of this directory to the given writability if allowed.
+	 *
+	 * @param 	isWritable
+	 *        	The new writability
+	 * @post  	The given writability is registered as the new writability
+	 *        	for this disk item.
+	 *        	| new.isWritable() == isWritable
+	 * @throws	DiskItemNotWritableException(this)
+	 * 			The directory is not writable, that can't be changed.
+	 * 			| !this.isWritable()
+	 */
+	@Raw 
+	public void setWritable(boolean isWritable) throws DiskItemNotWritableException {
+		if (this.isWritable) {
+			this.isWritable = isWritable;
+		}
+		else {
+			throw new DiskItemNotWritableException(this);
+		}
+		
+	}
+	
+	/*********************************
+	 * name
+	 *********************************
+	
+	/**
+	 * Check whether the given name is a legal name for a directory.
+	 * 
+	 * @param  	name
+	 *			The name to be checked
+	 * @return	True if the given string is effective, not
+	 * 			empty and consisting only of letters, digits, dots,
+	 * 			hyphens and underscores; false otherwise.
+	 * 			| result ==
+	 * 			|	(name != null) && name.matches("[a-zA-Z_0-9-]+")
+	 */
+	public boolean isValidName(String name) {
+		return (name != null && name.matches("[a-zA-Z_0-9-]+"));
+	}
 	
 }
