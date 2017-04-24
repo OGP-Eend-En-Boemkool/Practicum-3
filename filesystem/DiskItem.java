@@ -214,9 +214,7 @@ public abstract class DiskItem {
 	 * 			| result ==
 	 * 			|	(name != null) && name.matches("[a-zA-Z_0-9.-]+")
 	 */
-	public static boolean isValidName(String name) {
-		return (name != null && name.matches("[a-zA-Z_0-9.-]+"));
-	}
+	public abstract boolean isValidName(String name);
 
 	/**
 	 * Set the name of this disk item to the given name.

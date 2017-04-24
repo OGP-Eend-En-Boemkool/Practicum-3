@@ -654,4 +654,23 @@ public class Directory extends DiskItem {
 		
 	}
 	
+	/*********************************
+	 * name
+	 *********************************
+	
+	/**
+	 * Check whether the given name is a legal name for a directory.
+	 * 
+	 * @param  	name
+	 *			The name to be checked
+	 * @return	True if the given string is effective, not
+	 * 			empty and consisting only of letters, digits, dots,
+	 * 			hyphens and underscores; false otherwise.
+	 * 			| result ==
+	 * 			|	(name != null) && name.matches("[a-zA-Z_0-9-]+")
+	 */
+	public boolean isValidName(String name) {
+		return (name != null && name.matches("[a-zA-Z_0-9-]+"));
+	}
+	
 }
