@@ -21,7 +21,7 @@ import filesystem.exception.*;
  * @version	2.2 - 2016
  * 
  */
-public abstract class DiskItem {
+public abstract class DiskItem extends Item{
 
 	/**
 	 * Initialize a new root disk item with given name and writability.
