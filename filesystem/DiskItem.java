@@ -508,7 +508,7 @@ public abstract class DiskItem {
 	/**
 	 * Variable registering whether or not this disk item is writable.
 	 */
-	private boolean isWritable = true;
+	protected boolean isWritable = true;
 
 	/**
 	 * Check whether this disk item is writable.
@@ -521,16 +521,18 @@ public abstract class DiskItem {
 	/**
 	 * Set the writability of this disk item to the given writability.
 	 *
-	 * @param isWritable
-	 *        The new writability
-	 * @post  The given writability is registered as the new writability
-	 *        for this disk item.
-	 *        | new.isWritable() == isWritable
+	 * @param 	isWritable
+	 *        	The new writability
+	 * @post  	The given writability is registered as the new writability
+	 *        	for this disk item.
+	 *        	| new.isWritable() == isWritable
+	 * @throws	DiskItemNotWritableException(this)
+	 * 			A directory that is not writable, can't be changed to writable
+	 * 			| (this.getClass() == Directory) && (!this.isWritable())
 	 */
 	@Raw 
-	public void setWritable(boolean isWritable) {
-		this.isWritable = isWritable;
-	}
+	protected abstract void setWritable(boolean isWritable)
+			throws DiskItemNotWritableException;
 
 
 
@@ -635,7 +637,7 @@ public abstract class DiskItem {
 
 
 	/**
-	 * Turns this disk item in a root disk item.
+	 * Turns this disk item in a root disk item if allowed.
 	 * 
 	 * @post    The disk item is a root disk item.
 	 *          | new.isRoot()
@@ -656,23 +658,12 @@ public abstract class DiskItem {
 	 * @throws 	IllegalStateException
 	 * 			This disk item is terminated
 	 * 			| isTerminated()
+	 * @throws	DiskItemCannotBeRootException(this)
+	 * 			This disk item is not a directory
+	 * 			| this.getClass() != Directory
 	 */ 
-	public void makeRoot() throws DiskItemNotWritableException {
-		if ( isTerminated()) 
-			throw new IllegalStateException("Diskitem is terminated!");
-		if (!isRoot()) {
-			if (!isWritable()) 
-				throw new DiskItemNotWritableException(this);
-			if(!getParentDirectory().isWritable())
-				throw new DiskItemNotWritableException(getParentDirectory());
-
-			Directory dir = getParentDirectory();
-			setParentDirectory(null); 
-			//this item is now in a raw state
-			dir.removeAsItem(this);
-			setModificationTime();
-		}
-	}
+	protected abstract void makeRoot()
+			throws DiskItemNotWritableException, DiskItemCannotBeRootException;
 
 	/**
 	 * Check whether this item is a root item.
@@ -682,9 +673,7 @@ public abstract class DiskItem {
 	 *        	| result == (getParentDirectory() == null)
 	 */
 	@Raw
-	public boolean isRoot() {
-		return getParentDirectory() == null;
-	}
+	protected abstract boolean isRoot();
 
 	/** 
 	 * Check whether this disk item has a proper parent directory as
@@ -789,7 +778,7 @@ public abstract class DiskItem {
 	 * 			| isTerminated()
 	 */
 	@Raw @Model
-	private void setParentDirectory(Directory parentDirectory)
+	protected void setParentDirectory(Directory parentDirectory)
 			throws IllegalArgumentException, IllegalStateException {
 		if ( isTerminated()) 
 			throw new IllegalStateException("Diskitem is terminated!");

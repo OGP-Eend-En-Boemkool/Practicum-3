@@ -254,4 +254,48 @@ public class File extends DiskItem{
         }
     }
     
+    /*********************************
+     * root
+     *********************************
+    
+    /**
+     * A file cannot be a root item, so this method always throws an exception.
+     * 
+     * @throws	DiskItemCannotBeRootException(this)
+	 * 			This disk item is not a directory
+	 * 			| this.getClass() != Directory
+     */
+    public void makeRoot()
+    		throws DiskItemNotWritableException, DiskItemCannotBeRootException {
+    	throw new DiskItemCannotBeRootException(this);
+    }
+    
+    /**
+     * Check whether this file is a root item.
+	 * 
+	 * @return  False (files cannot be root items)
+     */
+    @Raw
+	public boolean isRoot(){
+    	return false;
+    }
+    
+    /********************************
+     * writable
+     ********************************
+    
+    /**
+	 * Set the writability of this file to the given writability.
+	 *
+	 * @param isWritable
+	 *        The new writability
+	 * @post  The given writability is registered as the new writability
+	 *        for this disk item.
+	 *        | new.isWritable() == isWritable
+	 */
+	@Raw 
+	public void setWritable(boolean isWritable) {
+		this.isWritable = isWritable;
+	}
+    
 }
