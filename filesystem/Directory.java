@@ -70,7 +70,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 *         | new.getNbItems() == 0
 	 */
 	public Directory(Directory parent, String name, boolean writable) 
-			throws IllegalArgumentException, DiskItemNotWritableException {
+			throws IllegalArgumentException, ItemNotWritableException {
 		super(parent,name,writable);    
 	}
 
@@ -87,7 +87,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 *         | this(parent,name,true)       
 	 */
 	public Directory(Directory parent, String name) 
-			throws IllegalArgumentException, DiskItemNotWritableException {
+			throws IllegalArgumentException, ItemNotWritableException {
 		this(parent,name,true);    
 	}    
 
@@ -148,7 +148,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 *        | for each item in items:
 	 *        |   item.getParentDirectory() == this
 	 */	
-	private final List<DiskItem> items = new ArrayList<DiskItem>();  
+	private final List<Item> items = new ArrayList<Item>();  
 
 	/**
 	 * Return the number of items of this directory.
@@ -169,7 +169,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 *         	| (index < 1) || (index > getNbItems())
 	 */
 	@Basic @Raw
-	public DiskItem getItemAt(int index) throws IndexOutOfBoundsException {
+	public Item getItemAt(int index) throws IndexOutOfBoundsException {
 		try{
 			return items.get(index - 1);
 		} catch (IndexOutOfBoundsException e) {
@@ -207,7 +207,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 * @note	This checker does not verify the consistency of the bidirectional relationship.
 	 */
 	@Raw
-	public boolean canHaveAsItem(@Raw DiskItem item) {
+	public boolean canHaveAsItem(@Raw Item item) {
 		if (item == null || item.isTerminated() || this.isTerminated()) return false;
 		if (item.isDirectOrIndirectParentOf(this)) return false;
 		if (this.hasAsItem(item)) {
@@ -217,7 +217,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 			}
 			return count == 1;
 		}else{
-			return (!this.containsDiskItemWithName(item.getName()) && (item.isRoot() || item.getParentDirectory().isWritable())); 
+			return (!this.containsItemWithName(item.getName()) && (item.isRoot() || item.getParentDirectory().isWritable())); 
 		}
 	}
 
@@ -248,7 +248,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 * 			a new item can be added at a certain position.
 	 */
 	@Raw
-	public boolean canHaveAsItemAt(@Raw DiskItem item, int index){ 
+	public boolean canHaveAsItemAt(@Raw Item item, int index){ 
 		if (!canHaveAsItem(item))
 			return false;
 		if ((index < 1) || (index > getNbItems()+1))
@@ -297,7 +297,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 *         	| 	      (getItemAt(I) == item)
 	 */
 	@Raw
-	public boolean hasAsItem(@Raw DiskItem item) { 
+	public boolean hasAsItem(@Raw Item item) { 
 		for (int i=1; i<=getNbItems(); i++) {
 			if (getItemAt(i) == item)
 				return true;
@@ -329,7 +329,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 *          | hasAsItem(item) || !canHaveAsItem(item)
 	 */ 
 	@Model
-	protected void addAsItem(@Raw DiskItem item) throws IllegalArgumentException{
+	protected void addAsItem(@Raw Item item) throws IllegalArgumentException{
 		if(hasAsItem(item) || !canHaveAsItem(item))
 			throw new IllegalArgumentException();
 		//now find the right index to add this item
@@ -361,7 +361,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 *          This directory already contains the given item or cannot have it at the given index.
 	 *          | hasAsItem(item) || !canHaveAsItemAt(item,index)
 	 */
-	private void addItemAt(@Raw DiskItem item, int index) throws IllegalArgumentException {
+	private void addItemAt(@Raw Item item, int index) throws IllegalArgumentException {
 		if (hasAsItem(item) || !canHaveAsItemAt(item,index))
 			throw new IllegalArgumentException("cannot add the given item to this directory");
 		items.add(index-1,item);
@@ -381,7 +381,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 *         	| ! hasAsItem(item)
 	 */
 	@Raw @Model
-	protected void removeAsItem(@Raw DiskItem item) throws IllegalArgumentException{
+	protected void removeAsItem(@Raw Item item) throws IllegalArgumentException{
 		
 		if(!hasAsItem(item))
 			throw new IllegalArgumentException("This item is not present in this directory");
@@ -447,7 +447,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 * 			| result == exists(name)
 	 */
 	@Raw
-	public boolean containsDiskItemWithName(String name){
+	public boolean containsItemWithName(String name){
 		return exists(name);
 	}
 
@@ -487,13 +487,13 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 *         	| else result == null
 	 * @note	This operation should complete in O(log(n)) time
 	 */
-	public DiskItem getItem(String name) {
+	public Item getItem(String name) {
 		//do a binary search!
 		int low = 1;
 		int high = getNbItems();
 		int middle = (low+high)/2;
 		while (low <= high) {
-			DiskItem middleItem = getItemAt(middle);
+			Item middleItem = getItemAt(middle);
 			if(middleItem.getName().equalsIgnoreCase(name)) 
 				return middleItem;
 			if (middleItem.isOrderedAfter(name)) {
@@ -518,7 +518,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 *          The given item is not in the directory
 	 *          | ! hasAsItem(item)
 	 */
-	public int getIndexOf(@Raw DiskItem item) throws IllegalArgumentException {
+	public int getIndexOf(@Raw Item item) throws IllegalArgumentException {
 		if(!hasAsItem(item))
 			throw new IllegalArgumentException("This item is not present in this directory");
 		else{
@@ -552,13 +552,13 @@ public class Directory extends DiskItem implements DirectoryIterator {
 		if(index < 1 || index > getNbItems())
 			throw new IndexOutOfBoundsException("The index is not valid");
 		try{
-			DiskItem item = getItemAt(index);
+			Item item = getItemAt(index);
 			removeItemAt(index);
 			addAsItem(item);
 		}catch(IllegalArgumentException e){
 			//this should not happen
 			assert false;
-		}catch(DiskItemNotWritableException e){
+		}catch(ItemNotWritableException e){
 			//this should not happen
 			assert false;
 		}catch(IndexOutOfBoundsException e){
@@ -598,14 +598,14 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 * 			| this.getClass() != Directory
 	 */ 
 	public void makeRoot()
-			throws DiskItemNotWritableException, DiskItemCannotBeRootException {
+			throws ItemNotWritableException, ItemCannotBeRootException {
 		if ( isTerminated()) 
 			throw new IllegalStateException("Diskitem is terminated!");
 		if (!isRoot()) {
 			if (!isWritable()) 
-				throw new DiskItemNotWritableException(this);
+				throw new ItemNotWritableException(this);
 			if(!getParentDirectory().isWritable())
-				throw new DiskItemNotWritableException(getParentDirectory());
+				throw new ItemNotWritableException(getParentDirectory());
 
 			Directory dir = getParentDirectory();
 			setParentDirectory(null); 
@@ -644,12 +644,12 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 * 			| !this.isWritable()
 	 */
 	@Raw 
-	public void setWritable(boolean isWritable) throws DiskItemNotWritableException {
+	public void setWritable(boolean isWritable) throws ItemNotWritableException {
 		if (this.isWritable) {
 			this.isWritable = isWritable;
 		}
 		else {
-			throw new DiskItemNotWritableException(this);
+			throw new ItemNotWritableException(this);
 		}
 		
 	}
@@ -664,7 +664,7 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	 * @param  	name
 	 *			The name to be checked
 	 * @return	True if the given string is effective, not
-	 * 			empty and consisting only of letters, digits, dots,
+	 * 			empty and consisting only of letters, digits,
 	 * 			hyphens and underscores; false otherwise.
 	 * 			| result ==
 	 * 			|	(name != null) && name.matches("[a-zA-Z_0-9-]+")
