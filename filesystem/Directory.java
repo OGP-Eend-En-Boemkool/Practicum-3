@@ -70,7 +70,7 @@ public class Directory extends DiskItem {
 	 *         | new.getNbItems() == 0
 	 */
 	public Directory(Directory parent, String name, boolean writable) 
-			throws IllegalArgumentException, DiskItemNotWritableException {
+			throws IllegalArgumentException, ItemNotWritableException {
 		super(parent,name,writable);    
 	}
 
@@ -87,7 +87,7 @@ public class Directory extends DiskItem {
 	 *         | this(parent,name,true)       
 	 */
 	public Directory(Directory parent, String name) 
-			throws IllegalArgumentException, DiskItemNotWritableException {
+			throws IllegalArgumentException, ItemNotWritableException {
 		this(parent,name,true);    
 	}    
 
@@ -169,7 +169,7 @@ public class Directory extends DiskItem {
 	 *         	| (index < 1) || (index > getNbItems())
 	 */
 	@Basic @Raw
-	public DiskItem getItemAt(int index) throws IndexOutOfBoundsException {
+	public Item getItemAt(int index) throws IndexOutOfBoundsException {
 		try{
 			return items.get(index - 1);
 		} catch (IndexOutOfBoundsException e) {
@@ -217,7 +217,7 @@ public class Directory extends DiskItem {
 			}
 			return count == 1;
 		}else{
-			return (!this.containsDiskItemWithName(item.getName()) && (item.isRoot() || item.getParentDirectory().isWritable())); 
+			return (!this.containsItemWithName(item.getName()) && (item.isRoot() || item.getParentDirectory().isWritable())); 
 		}
 	}
 
@@ -447,7 +447,7 @@ public class Directory extends DiskItem {
 	 * 			| result == exists(name)
 	 */
 	@Raw
-	public boolean containsDiskItemWithName(String name){
+	public boolean containsItemWithName(String name){
 		return exists(name);
 	}
 
@@ -487,13 +487,13 @@ public class Directory extends DiskItem {
 	 *         	| else result == null
 	 * @note	This operation should complete in O(log(n)) time
 	 */
-	public DiskItem getItem(String name) {
+	public Item getItem(String name) {
 		//do a binary search!
 		int low = 1;
 		int high = getNbItems();
 		int middle = (low+high)/2;
 		while (low <= high) {
-			DiskItem middleItem = getItemAt(middle);
+			Item middleItem = getItemAt(middle);
 			if(middleItem.getName().equalsIgnoreCase(name)) 
 				return middleItem;
 			if (middleItem.isOrderedAfter(name)) {
@@ -518,7 +518,7 @@ public class Directory extends DiskItem {
 	 *          The given item is not in the directory
 	 *          | ! hasAsItem(item)
 	 */
-	public int getIndexOf(@Raw DiskItem item) throws IllegalArgumentException {
+	public int getIndexOf(@Raw Item item) throws IllegalArgumentException {
 		if(!hasAsItem(item))
 			throw new IllegalArgumentException("This item is not present in this directory");
 		else{
@@ -552,13 +552,13 @@ public class Directory extends DiskItem {
 		if(index < 1 || index > getNbItems())
 			throw new IndexOutOfBoundsException("The index is not valid");
 		try{
-			DiskItem item = getItemAt(index);
+			Item item = getItemAt(index);
 			removeItemAt(index);
 			addAsItem(item);
 		}catch(IllegalArgumentException e){
 			//this should not happen
 			assert false;
-		}catch(DiskItemNotWritableException e){
+		}catch(ItemNotWritableException e){
 			//this should not happen
 			assert false;
 		}catch(IndexOutOfBoundsException e){
@@ -598,14 +598,14 @@ public class Directory extends DiskItem {
 	 * 			| this.getClass() != Directory
 	 */ 
 	public void makeRoot()
-			throws DiskItemNotWritableException, DiskItemCannotBeRootException {
+			throws ItemNotWritableException, ItemCannotBeRootException {
 		if ( isTerminated()) 
 			throw new IllegalStateException("Diskitem is terminated!");
 		if (!isRoot()) {
 			if (!isWritable()) 
-				throw new DiskItemNotWritableException(this);
+				throw new ItemNotWritableException(this);
 			if(!getParentDirectory().isWritable())
-				throw new DiskItemNotWritableException(getParentDirectory());
+				throw new ItemNotWritableException(getParentDirectory());
 
 			Directory dir = getParentDirectory();
 			setParentDirectory(null); 
@@ -644,12 +644,12 @@ public class Directory extends DiskItem {
 	 * 			| !this.isWritable()
 	 */
 	@Raw 
-	public void setWritable(boolean isWritable) throws DiskItemNotWritableException {
+	public void setWritable(boolean isWritable) throws ItemNotWritableException {
 		if (this.isWritable) {
 			this.isWritable = isWritable;
 		}
 		else {
-			throw new DiskItemNotWritableException(this);
+			throw new ItemNotWritableException(this);
 		}
 		
 	}

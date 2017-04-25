@@ -47,7 +47,7 @@ public class File extends DiskItem{
      *         	|new.getType() == type        
      */
     public File(Directory parent, String name, Type type, int size, boolean writable)
-    		throws IllegalArgumentException, DiskItemNotWritableException {
+    		throws IllegalArgumentException, ItemNotWritableException {
     	super(parent,name,writable);
     	setSize(size);
     	this.type=type;
@@ -70,7 +70,7 @@ public class File extends DiskItem{
      *         | this(parent,name,type,0,true)
      */
     public File(Directory parent, String name, Type type)
-    		throws IllegalArgumentException, DiskItemNotWritableException {
+    		throws IllegalArgumentException, ItemNotWritableException {
     	this(parent,name,type,0,true);
     }    
     
@@ -209,7 +209,7 @@ public class File extends DiskItem{
      * @effect  The size of this file is increased with the given delta.
      *          | changeSize(delta)
      */
-    public void enlarge(int delta) throws DiskItemNotWritableException {
+    public void enlarge(int delta) throws ItemNotWritableException {
         changeSize(delta);
     }
 
@@ -224,7 +224,7 @@ public class File extends DiskItem{
      * @effect  The size of this file is decreased with the given delta.
      *          | changeSize(-delta)
      */
-    public void shorten(int delta) throws DiskItemNotWritableException {
+    public void shorten(int delta) throws ItemNotWritableException {
         changeSize(-delta);
     }
 
@@ -245,12 +245,12 @@ public class File extends DiskItem{
      *         | ! isWritable()
      */
     @Model 
-    private void changeSize(int delta) throws DiskItemNotWritableException{
+    private void changeSize(int delta) throws ItemNotWritableException{
         if (isWritable()) {
             setSize(getSize()+delta);
             setModificationTime();            
         }else{
-        	throw new DiskItemNotWritableException(this);
+        	throw new ItemNotWritableException(this);
         }
     }
     
@@ -266,8 +266,8 @@ public class File extends DiskItem{
 	 * 			| this.getClass() != Directory
      */
     public void makeRoot()
-    		throws DiskItemNotWritableException, DiskItemCannotBeRootException {
-    	throw new DiskItemCannotBeRootException(this);
+    		throws ItemNotWritableException, ItemCannotBeRootException {
+    	throw new ItemCannotBeRootException(this);
     }
     
     /**

@@ -36,9 +36,9 @@ public abstract class Item {
 	protected Item(Directory parent, String name) throws IllegalArgumentException, ItemNotWritableException {
 		if (parent == null) 
 			throw new IllegalArgumentException();
-		if (parent.isWritable() && isValidName(name) && parent.containsDiskItemWithName(name))
+		if (parent.isWritable() && isValidName(name) && parent.containsItemWithName(name))
 			throw new IllegalArgumentException();
-		if (parent.isWritable() && !isValidName(name) && parent.containsDiskItemWithName(getDefaultName()))
+		if (parent.isWritable() && !isValidName(name) && parent.containsItemWithName(getDefaultName()))
 			throw new IllegalArgumentException();
 		if (!parent.isWritable()) 
 			throw new ItemNotWritableException(parent);
