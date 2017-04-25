@@ -290,7 +290,7 @@ public class File extends DiskItem{
 	 * @param isWritable
 	 *        The new writability
 	 * @post  The given writability is registered as the new writability
-	 *        for this disk item.
+	 *        for this file.
 	 *        | new.isWritable() == isWritable
 	 */
 	@Raw 
