@@ -1,13 +1,8 @@
 package filesystem;
 
-import be.kuleuven.cs.som.annotate.*;
 import filesystem.exception.*;
 
-/**
- * A class of links.
- */
-
-public abstract class Link extends Item {
+public class DirectoryLink extends Link{
 	
 	/**********************************************************
 	 * Constructors
@@ -21,12 +16,11 @@ public abstract class Link extends Item {
 	 *         The parent directory of the new link.
 	 * @param  name
 	 *         The name of the new link.
-	 * @param  refDiskItem
-	 *         The referenced disk item of the new link.
+	 * @param  refDirectory
+	 *         The referenced directory of the new link.
 	 * @effect The new link is an item with the given
 	 *         parent and name.
-	 *         | super(parent,name)  
-	 * @effect The       
+	 *         | super(name,refDirectory,parent)        
 	 * @post   The new creation time of this link is initialized to some time during
 	 *         constructor execution.
 	 *         | (new.getCreationTime().getTime() >= System.currentTimeMillis()) &&
@@ -51,48 +45,9 @@ public abstract class Link extends Item {
 	 *          | parent != null && parent.isWritable() && 
 	 *         	|   !isValidName(name) && parent.containsDiskItemWithName(getDefaultName())
 	 */
-	public Link (String name, DiskItem refDiskItem, Directory parent)
+	public DirectoryLink (String name, Directory refDirectory, Directory parent)
 			throws IllegalArgumentException, ItemNotWritableException{
-		super(parent, name);
-		setRefDiskItem(refDiskItem);		
-	}
-	
-	/**********************************************************
-	 * Referenced disk item
-	 **********************************************************/
-	
-	/**
-	 * Variable referencing the referenced disk item of this link.
-	 */
-	private DiskItem refDiskItem = null;
-	
-	/**
-	 * Return the referenced disk item of this link.
-	 */
-	@Raw @Basic 
-	public DiskItem getRefDiskItem() throws UnvalidLinkException{
-		if (refDiskItem.isTerminated()){
-			throw new UnvalidLinkException(this);
-		}
-		return refDiskItem;
-	}
-	
-	/**
-	 * Initialize the referenced Disk Item of the new link
-	 * 
-	 * @param 	refDiskItem
-	 * 			The referenced disk item
-	 * @post	If the given referenced disk item isn't terminated, 
-	 * 			the refDiskItem is set to the given disk item
-	 * 			|if(!isTerminated())
-	 * 			|	then new.getRefDiskItem().equals(refDiskItem)
-	 * @throws 	IllegalStateException
-	 * 			The given disk item already has been terminated
-	 * 			| isTerminated()
-	 */
-	private void setRefDiskItem(DiskItem refDiskItem) throws IllegalStateException{
-		if ( isTerminated()) 
-			throw new IllegalStateException("Disk item is terminated!");
-		this.refDiskItem = refDiskItem;
+		super(name, refDirectory,parent);
+		
 	}
 }
