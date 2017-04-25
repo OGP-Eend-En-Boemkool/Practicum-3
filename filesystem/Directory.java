@@ -775,4 +775,105 @@ public class Directory extends DiskItem {
 		};
 	}
 	
+	/********************************
+	 * extra methods
+	 ********************************
+	
+	/**
+	 * return the total disk usage from this directory, with every direct and indirect item
+	 * 
+	 * @return	the total disk usage
+	 * @throws 	IndexOutOfBoundsException
+	 * 			dirIt has no current item.
+	 * 			| getNbRemainingItems() == 0
+	 */
+	public long getTotalDiskUsage() throws IndexOutOfBoundsException {
+		DirectoryIterator dirIt = iterator();
+		long total = 0;
+		while (dirIt.getNbRemainingItems() != 0) {
+			if (dirIt.getCurrentItem() instanceof Directory){
+				Directory dir = (Directory)dirIt.getCurrentItem();
+				total += dir.getTotalDiskUsage();
+			}
+			else if (dirIt.getCurrentItem() instanceof File){
+				File file = (File)dirIt.getCurrentItem();
+				total += file.getSize();
+			}
+			dirIt.advance();
+		}
+		return total;
+	}
+	
+	/**
+	 * Terminates all items (direct and indirect) in this directory if they are all
+	 * writable.
+	 * 
+	 * @post	All items in this directory are terminated
+	 * 			| for all items in this {
+	 * 			|		item.isTerminated()
+	 * 			| }
+	 * @throws 	NotAllWritableException
+	 * 			Not all items in this directory are writable
+	 * 			| !this.allWritable()
+	 * @throws 	IllegalStateException
+	 * 			This item is not yet terminated and it can not be terminated.
+	 * 		   	| !isTerminated() && !canBeTerminated()
+	 */
+	public void deleteRecursive() throws NotAllWritableException, IllegalStateException {
+		if (this.allWritable() && this.canBeTerminated()){
+			DirectoryIterator dirIt = iterator();
+			while (dirIt.getNbRemainingItems() != 0){
+				if (dirIt.getCurrentItem() instanceof Directory){
+					Directory dir = (Directory)dirIt.getCurrentItem();
+					dir.deleteRecursive();
+					dir.terminate();
+				}
+				else {
+					dirIt.getCurrentItem().terminate();
+				}
+				dirIt.advance();
+			}
+		}
+		else {
+			throw new NotAllWritableException(this);
+		}
+	}
+	
+	/**
+	 * Return if all direct and indirect items are writable or not.
+	 * 
+	 * @return	true if and only if all direct and indirect items are writable,
+	 * 			false otherwise.
+	 * 			| result ==
+	 * 			| (for all items in this {
+	 * 			|		item.isWritable()
+	 * 			| })
+	 */
+	private boolean allWritable(){
+		DirectoryIterator dirIt = iterator();
+		if (!this.isWritable()){
+			return false;
+		}
+		boolean allWritable = true;
+		while (dirIt.getNbRemainingItems() != 0){
+			if (dirIt.getCurrentItem() instanceof Directory){
+				Directory dir = (Directory)dirIt.getCurrentItem();
+				if (!dir.isWritable()){
+					allWritable = false;
+				}
+				else if (!dir.allWritable()){
+					allWritable = false;
+				}
+			}
+			else if (dirIt.getCurrentItem() instanceof File){
+				File file = (File)dirIt.getCurrentItem();
+				if (!file.isWritable()){
+					allWritable = false;
+				}
+			}
+			dirIt.advance();
+		}
+		return allWritable;
+	}
+	
 }
