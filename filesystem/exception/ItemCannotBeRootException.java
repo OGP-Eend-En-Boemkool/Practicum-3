@@ -16,7 +16,7 @@ public class ItemCannotBeRootException extends RuntimeException {
 	 * given item.
 	 * 
 	 * @param	item
-	 * 			The item for the new not writable exception.
+	 * 			The item for the new cannot be root exception.
 	 * @post	The item involved in the new cannot be root exception
 	 * 			is set to the given item.
 	 * 			| new.getItem() == item
