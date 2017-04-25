@@ -101,10 +101,10 @@ public abstract class DiskItem extends Item{
 	 * @param  	name
 	 *			The name to be checked
 	 * @return	True if the given string is effective, not
-	 * 			empty and consisting only of letters, digits, dots,
-	 * 			hyphens and underscores; false otherwise.
-	 * 			| result ==
-	 * 			|	(name != null) && name.matches("[a-zA-Z_0-9.-]+")
+	 * 			empty and consisting only of letters, digits,
+	 * 			hyphens and underscores.
+	 * 			| if(name != null) && name.matches("[a-zA-Z_0-9-]+")
+	 * 			| then result == true
 	 */
 	public abstract boolean isValidName(String name);
 
