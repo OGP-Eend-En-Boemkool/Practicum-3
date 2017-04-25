@@ -678,7 +678,10 @@ public class Directory extends DiskItem {
 	 **********************************
 	
 	/**
+	 * return this directory (needed for the iterator)
 	 * 
+	 * @return	this directory
+	 * 			| this
 	 */
 	public Directory returnThis(){
 		return this;
