@@ -15,7 +15,7 @@ import filesystem.exception.*;
  * @author 	Tommy Messelis
  * @version 2.2 - 2016
  */
-public class Directory extends DiskItem {
+public class Directory extends DiskItem implements DirectoryIterator {
 
 	/**********************************************************
 	 * Constructors
@@ -671,6 +671,44 @@ public class Directory extends DiskItem {
 	 */
 	public boolean isValidName(String name) {
 		return (name != null && name.matches("[a-zA-Z_0-9-]+"));
+	}
+	
+	/**********************************
+	 * iterator
+	 **********************************
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public DirectoryIterator iterator() {
+		return new DirectoryIterator(){
+
+			@Override
+			public int getNbRemainingItems() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			@Override
+			public DiskItem getCurrentItem() throws IndexOutOfBoundsException {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public void advance() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void reset() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		};
 	}
 	
 }
