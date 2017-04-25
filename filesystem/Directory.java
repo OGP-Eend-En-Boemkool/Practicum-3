@@ -148,7 +148,7 @@ public class Directory extends DiskItem {
 	 *        | for each item in items:
 	 *        |   item.getParentDirectory() == this
 	 */	
-	private final List<DiskItem> items = new ArrayList<DiskItem>();  
+	private final List<Item> items = new ArrayList<Item>();  
 
 	/**
 	 * Return the number of items of this directory.
@@ -207,7 +207,7 @@ public class Directory extends DiskItem {
 	 * @note	This checker does not verify the consistency of the bidirectional relationship.
 	 */
 	@Raw
-	public boolean canHaveAsItem(@Raw DiskItem item) {
+	public boolean canHaveAsItem(@Raw Item item) {
 		if (item == null || item.isTerminated() || this.isTerminated()) return false;
 		if (item.isDirectOrIndirectParentOf(this)) return false;
 		if (this.hasAsItem(item)) {
@@ -248,7 +248,7 @@ public class Directory extends DiskItem {
 	 * 			a new item can be added at a certain position.
 	 */
 	@Raw
-	public boolean canHaveAsItemAt(@Raw DiskItem item, int index){ 
+	public boolean canHaveAsItemAt(@Raw Item item, int index){ 
 		if (!canHaveAsItem(item))
 			return false;
 		if ((index < 1) || (index > getNbItems()+1))
@@ -297,7 +297,7 @@ public class Directory extends DiskItem {
 	 *         	| 	      (getItemAt(I) == item)
 	 */
 	@Raw
-	public boolean hasAsItem(@Raw DiskItem item) { 
+	public boolean hasAsItem(@Raw Item item) { 
 		for (int i=1; i<=getNbItems(); i++) {
 			if (getItemAt(i) == item)
 				return true;
@@ -329,7 +329,7 @@ public class Directory extends DiskItem {
 	 *          | hasAsItem(item) || !canHaveAsItem(item)
 	 */ 
 	@Model
-	protected void addAsItem(@Raw DiskItem item) throws IllegalArgumentException{
+	protected void addAsItem(@Raw Item item) throws IllegalArgumentException{
 		if(hasAsItem(item) || !canHaveAsItem(item))
 			throw new IllegalArgumentException();
 		//now find the right index to add this item
@@ -361,7 +361,7 @@ public class Directory extends DiskItem {
 	 *          This directory already contains the given item or cannot have it at the given index.
 	 *          | hasAsItem(item) || !canHaveAsItemAt(item,index)
 	 */
-	private void addItemAt(@Raw DiskItem item, int index) throws IllegalArgumentException {
+	private void addItemAt(@Raw Item item, int index) throws IllegalArgumentException {
 		if (hasAsItem(item) || !canHaveAsItemAt(item,index))
 			throw new IllegalArgumentException("cannot add the given item to this directory");
 		items.add(index-1,item);
@@ -381,7 +381,7 @@ public class Directory extends DiskItem {
 	 *         	| ! hasAsItem(item)
 	 */
 	@Raw @Model
-	protected void removeAsItem(@Raw DiskItem item) throws IllegalArgumentException{
+	protected void removeAsItem(@Raw Item item) throws IllegalArgumentException{
 		
 		if(!hasAsItem(item))
 			throw new IllegalArgumentException("This item is not present in this directory");

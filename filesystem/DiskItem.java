@@ -98,7 +98,7 @@ public abstract class DiskItem extends Item{
 	 */
 	@Model
 	protected DiskItem(Directory parent, String name, boolean writable) 
-			throws IllegalArgumentException, DiskItemNotWritableException {
+			throws IllegalArgumentException, ItemNotWritableException {
 		super(parent,name);
 		setWritable(writable);
 	}
@@ -155,7 +155,7 @@ public abstract class DiskItem extends Item{
 			if(!isRoot()){
 				try{
 					makeRoot();
-				}catch(DiskItemNotWritableException e){
+				}catch(ItemNotWritableException e){
 					//should not happen since this item and its parent are writable
 					assert false;
 				}
@@ -275,9 +275,9 @@ public abstract class DiskItem extends Item{
 	 * 			This disk item is already terminated
 	 * 			| isTerminated()
 	 */
-	public void changeName(String name) throws DiskItemNotWritableException, IllegalStateException {
+	public void changeName(String name) throws ItemNotWritableException, IllegalStateException {
 		if (isTerminated()) throw new IllegalStateException("Disk item terminated!");
-		if (!isWritable()) throw new DiskItemNotWritableException(this);
+		if (!isWritable()) throw new ItemNotWritableException(this);
 		if (canAcceptAsNewName(name)) {
 			setName(name);
 			setModificationTime();
@@ -505,13 +505,13 @@ public abstract class DiskItem extends Item{
 	 * @post  	The given writability is registered as the new writability
 	 *        	for this disk item.
 	 *        	| new.isWritable() == isWritable
-	 * @throws	DiskItemNotWritableException(this)
+	 * @throws	ItemNotWritableException(this)
 	 * 			A directory that is not writable, can't be changed to writable
 	 * 			| (this.getClass() == Directory) && (!this.isWritable())
 	 */
 	@Raw 
 	protected abstract void setWritable(boolean isWritable)
-			throws DiskItemNotWritableException;
+			throws ItemNotWritableException;
 
 
 
@@ -581,15 +581,15 @@ public abstract class DiskItem extends Item{
 	 * 			| isTerminated()
 	 */
 	public void move(Directory target) 
-			throws IllegalArgumentException, DiskItemNotWritableException, IllegalStateException {
+			throws IllegalArgumentException, ItemNotWritableException, IllegalStateException {
 		if ( isTerminated()) 
 			throw new IllegalStateException("Diskitem is terminated!");
 		if ( (target == null) || (getParentDirectory() == target) || !target.canHaveAsItem(this))
 			throw new IllegalArgumentException();
 		if (!isWritable())
-			throw new DiskItemNotWritableException(this);
+			throw new ItemNotWritableException(this);
 		if (!target.isWritable())
-			throw new DiskItemNotWritableException(target);
+			throw new ItemNotWritableException(target);
 
 		if (!isRoot()) {
 			try{
@@ -603,11 +603,11 @@ public abstract class DiskItem extends Item{
 		setParentDirectory(target); 
 		try{
 			target.addAsItem(this); //this is a raw item because it's not yet registered in the new parent
-									//so the formal argument of assAsItem should be annotated @Raw
+									//so the formal argument of addAsItem should be annotated @Raw
 		}catch(IllegalArgumentException e){
 			//this should not happen, because it can have this item
 			assert false;
-		}catch(DiskItemNotWritableException e){
+		}catch(ItemNotWritableException e){
 			//this should not happen, because we checked it
 			assert false;
 		}
@@ -642,7 +642,7 @@ public abstract class DiskItem extends Item{
 	 * 			| this.getClass() != Directory
 	 */ 
 	protected abstract void makeRoot()
-			throws DiskItemNotWritableException, DiskItemCannotBeRootException;
+			throws ItemNotWritableException, ItemCannotBeRootException;
 
 	/**
 	 * Check whether this item is a root item.
