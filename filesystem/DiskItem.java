@@ -96,19 +96,6 @@ public abstract class DiskItem extends Item{
 	 **********************************************************/
 
 	/**
-	 * Check whether the given name is a legal name for a disk item.
-	 * 
-	 * @param  	name
-	 *			The name to be checked
-	 * @return	True if the given string is effective, not
-	 * 			empty and consisting only of letters, digits,
-	 * 			hyphens and underscores.
-	 * 			| if(name != null) && name.matches("[a-zA-Z_0-9-]+")
-	 * 			| then result == true
-	 */
-	public abstract boolean isValidName(String name);
-
-	/**
 	 * Check whether the name of this disk item can be changed into the
 	 * given name.
 	 * 
