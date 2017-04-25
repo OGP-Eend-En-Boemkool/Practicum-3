@@ -704,7 +704,7 @@ public abstract class Item {
 	protected void setParentDirectory(Directory parentDirectory)
 			throws IllegalArgumentException, IllegalStateException {
 		if ( isTerminated()) 
-			throw new IllegalStateException("Diskitem is terminated!");
+			throw new IllegalStateException("Disk item is terminated!");
 		if (!canHaveAsParentDirectory(parentDirectory)) {
 			throw new IllegalArgumentException("Inappropriate item!");
 		}

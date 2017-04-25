@@ -7,18 +7,18 @@ import filesystem.Item;
 public class ItemCannotBeRootException extends RuntimeException {
 
 	/**
-	 * Variable referencing the disk item that can't be root.
+	 * Variable referencing the item that can't be root.
 	 */
 	private final Item item;
 	
 	/**
 	 * Initialize this new cannot be root exception involving the
-	 * given disk item.
+	 * given item.
 	 * 
 	 * @param	item
-	 * 			The disk item for the new not writable exception.
-	 * @post	The disk item involved in the new cannot be root exception
-	 * 			is set to the given disk item.
+	 * 			The item for the new not writable exception.
+	 * @post	The item involved in the new cannot be root exception
+	 * 			is set to the given item.
 	 * 			| new.getItem() == item
 	 */
 	@Raw
@@ -27,7 +27,7 @@ public class ItemCannotBeRootException extends RuntimeException {
 	}
 	
 	/**
-	 * Return the disk item involved in this cannot be root exception.
+	 * Return the item involved in this cannot be root exception.
 	 */
 	@Raw @Basic
 	public Item getItem() {

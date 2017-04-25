@@ -77,12 +77,12 @@ public abstract class DiskItem extends Item{
 	 * @throws 	IllegalArgumentException
 	 *         	The given valid name already exists in the effective and writable parent directory
 	 *          | parent != null && parent.isWritable() && 
-	 *         	|   isValidName(name) && parent.containsDiskItemWithName(name)
+	 *         	|   isValidName(name) && parent.containsItemWithName(name)
 	 * @throws 	IllegalArgumentException
 	 *         	The given name is not valid and the default name already exists in 
 	 *         	the effective parent directory
 	 *          | parent != null && parent.isWritable() && 
-	 *         	|   !isValidName(name) && parent.containsDiskItemWithName(getDefaultName())
+	 *         	|   !isValidName(name) && parent.containsItemWithName(getDefaultName())
 	 */
 	@Model
 	protected DiskItem(Directory parent, String name, boolean writable) 
