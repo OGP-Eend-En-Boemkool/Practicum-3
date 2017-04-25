@@ -15,7 +15,7 @@ import filesystem.exception.*;
  * @author 	Tommy Messelis
  * @version 2.2 - 2016
  */
-public class Directory extends DiskItem implements DirectoryIterator {
+public class Directory extends DiskItem {
 
 	/**********************************************************
 	 * Constructors
@@ -679,33 +679,94 @@ public class Directory extends DiskItem implements DirectoryIterator {
 	
 	/**
 	 * 
-	 * @return
+	 */
+	public Directory returnThis(){
+		return this;
+	}
+	
+	/**
+	 * a directory-iterator to iterate over the elements in a directory
+	 * 
 	 */
 	public DirectoryIterator iterator() {
 		return new DirectoryIterator(){
 
+			/**
+			 * variable referencing to the current item
+			 * current is set to the directory that called the iterator when there are no
+			 * more items left to iterate
+			 */
+			private Item current = getItemAt(1);
+			
+			/**
+			 * Return the number of remaining disk items to be
+			 * returned by this directory-iterator, including
+			 * the current item.
+			 * 
+			 * @return	The resulting number cannot be negative.
+			 * 			| result >= 0 
+			 */
 			@Override
 			public int getNbRemainingItems() {
-				// TODO Auto-generated method stub
-				return 0;
+				if (current == returnThis()) {
+					return 0;
+				}
+				else {
+					return getNbItems() - (getIndexOf(current) - 1);
+				}
+				
 			}
-
+			
+			/**
+			 * Return the current disk item of this directory-iterator.
+			 * 
+			 * @return	The current item
+			 * @throws	IndexOutOfBoundsException
+			 * 			This directory-iterator has no current item.
+			 * 			| getNbRemainingItems() == 0
+			 */
 			@Override
-			public DiskItem getCurrentItem() throws IndexOutOfBoundsException {
-				// TODO Auto-generated method stub
-				return null;
+			public Item getCurrentItem() throws IndexOutOfBoundsException {
+				if (getNbRemainingItems() != 0){
+					return current;
+				}
+				else {
+					throw new IndexOutOfBoundsException();
+				}
 			}
 
+			/**
+			 * Advance the current item of this directory-iterator to the
+			 * next disk item. 
+			 * 
+			 * @pre		This directory-iterator must still have some remaining items.
+			 * 			| getNbRemainingItems() > 0
+			 * @post	The number of remaining disk items is decremented
+			 * 			by 1.
+			 * 			| new.getNbRemainingItems() == getNbRemainingItems() - 1
+			 * @post	If the current item before calling this method is the last item,
+			 * 			then this method sets the current item to the directory that
+			 * 			called this method
+			 * 			| if (getNbRemainingItems() == 1) {
+			 * 			| 		current = returnThis()
+			 * 			| }
+			 */
 			@Override
 			public void advance() {
-				// TODO Auto-generated method stub
-				
+				if (getNbRemainingItems() > 1){
+					current = getItemAt(getIndexOf(current)+1);
+				}
+				else {
+					current = returnThis();
+				}
 			}
 
+			/**
+			 * Reset this directory-iterator to its first item.
+			 */
 			@Override
 			public void reset() {
-				// TODO Auto-generated method stub
-				
+				current = getItemAt(1);
 			}
 			
 		};
