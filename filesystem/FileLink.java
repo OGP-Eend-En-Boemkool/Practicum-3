@@ -2,7 +2,7 @@ package filesystem;
 
 import filesystem.exception.*;
 
-public class DirectoryLink extends Link{
+public class FileLink extends Link{
 	
 	/**********************************************************
 	 * Constructors
@@ -16,11 +16,11 @@ public class DirectoryLink extends Link{
 	 *         The parent directory of the new link.
 	 * @param  name
 	 *         The name of the new link.
-	 * @param  refDirectory
-	 *         The referenced directory of the new link.
+	 * @param  refFile
+	 *         The referenced file of the new link.
 	 * @effect The new link is an item with the given
 	 *         parent and name.
-	 *         | super(name,refDirectory,parent)        
+	 *         | super(name,refFile,parent)        
 	 * @post   The new creation time of this link is initialized to some time during
 	 *         constructor execution.
 	 *         | (new.getCreationTime().getTime() >= System.currentTimeMillis()) &&
@@ -45,27 +45,27 @@ public class DirectoryLink extends Link{
 	 *          | parent != null && parent.isWritable() && 
 	 *         	|   !isValidName(name) && parent.containsDiskItemWithName(getDefaultName())
 	 */
-	public DirectoryLink (String name, Directory refDirectory, Directory parent)
+	public FileLink (String name, File refFile, Directory parent)
 			throws IllegalArgumentException, ItemNotWritableException{
-		super(name, refDirectory,parent);
+		super(name, refFile ,parent);
 	}
 	
-	/*********************************
+	/********************************
 	 * name
-	 *********************************
+	 ********************************
 	
 	/**
-	 * Check whether the given name is a legal name for a directory.
+	 * Check whether the given name is a legal name for the link.
 	 * 
 	 * @param  	name
 	 *			The name to be checked
 	 * @return	True if the given string is effective, not
-	 * 			empty and consisting only of letters, digits,
+	 * 			empty and consisting only of letters, digits, dots,
 	 * 			hyphens and underscores; false otherwise.
 	 * 			| result ==
-	 * 			|	(name != null) && name.matches("[a-zA-Z_0-9-]+")
+	 * 			|	(name != null) && name.matches("[a-zA-Z_0-9.-]+")
 	 */
 	public boolean isValidName(String name) {
-		return (name != null && name.matches("[a-zA-Z_0-9-]+"));
+		return (name != null && name.matches("[a-zA-Z_0-9.-]+"));
 	}
 }
