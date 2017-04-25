@@ -775,4 +775,33 @@ public class Directory extends DiskItem {
 		};
 	}
 	
+	/********************************
+	 * disk usage
+	 ********************************
+	
+	/**
+	 * return the total disk usage from this directory, with every direct and indirect item
+	 * 
+	 * @return	the total disk usage
+	 * @throws 	IndexOutOfBoundsException
+	 * 			dirIt has no current item.
+	 * 			| getNbRemainingItems() == 0
+	 */
+	public long getTotalDiskUsage() throws IndexOutOfBoundsException {
+		DirectoryIterator dirIt = iterator();
+		long total = 0;
+		while (dirIt.getNbRemainingItems() != 0) {
+			if (dirIt.getCurrentItem() instanceof Directory){
+				Directory dir = (Directory)dirIt.getCurrentItem();
+				total += dir.getTotalDiskUsage();
+			}
+			else if (dirIt.getCurrentItem() instanceof File){
+				File file = (File)dirIt.getCurrentItem();
+				total += file.getSize();
+			}
+			dirIt.advance();
+		}
+		return total;
+	}
+	
 }
