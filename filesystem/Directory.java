@@ -208,14 +208,16 @@ public class Directory extends DiskItem {
 	 */
 	@Raw
 	public boolean canHaveAsItem(@Raw Item item) {
-		if (item == null || item.isTerminated() || this.isTerminated()) return false;
-		if (item.isDirectOrIndirectParentOf(this)) return false;
+		if (item == null || item.isTerminated() || this.isTerminated()) 
+			return false;
+		if (item.isDirectOrIndirectParentOf(this)) 
+			return false;
 		if (this.hasAsItem(item)) {
 			int count = 0;
 			for (int position=1;position<=getNbItems();position++){
 				 if (item.getName().equalsIgnoreCase(getItemAt(position).getName())) count++;
 			}
-			return count == 1;
+			return (count == 1);
 		}else{
 			return (!this.containsItemWithName(item.getName()) && (item.isRoot() || item.getParentDirectory().isWritable())); 
 		}
@@ -671,6 +673,209 @@ public class Directory extends DiskItem {
 	 */
 	public boolean isValidName(String name) {
 		return (name != null && name.matches("[a-zA-Z_0-9-]+"));
+	}
+	
+	/**********************************
+	 * iterator
+	 **********************************
+	
+	/**
+	 * return this directory (needed for the iterator)
+	 * 
+	 * @return	this directory
+	 * 			| this
+	 */
+	public Directory returnThis(){
+		return this;
+	}
+	
+	/**
+	 * a directory-iterator to iterate over the elements in a directory
+	 * 
+	 */
+	public DirectoryIterator iterator() {
+		return new DirectoryIterator(){
+
+			/**
+			 * variable referencing to the current item
+			 * current is set to the directory that called the iterator when there are no
+			 * more items left to iterate
+			 */
+			private Item current = getItemAt(1);
+			
+			/**
+			 * Return the number of remaining disk items to be
+			 * returned by this directory-iterator, including
+			 * the current item.
+			 * 
+			 * @return	The resulting number cannot be negative.
+			 * 			| result >= 0 
+			 */
+			@Override
+			public int getNbRemainingItems() {
+				if (current == returnThis()) {
+					return 0;
+				}
+				else {
+					return getNbItems() - (getIndexOf(current) - 1);
+				}
+				
+			}
+			
+			/**
+			 * Return the current disk item of this directory-iterator.
+			 * 
+			 * @return	The current item
+			 * @throws	IndexOutOfBoundsException
+			 * 			This directory-iterator has no current item.
+			 * 			| getNbRemainingItems() == 0
+			 */
+			@Override
+			public Item getCurrentItem() throws IndexOutOfBoundsException {
+				if (getNbRemainingItems() != 0){
+					return current;
+				}
+				else {
+					throw new IndexOutOfBoundsException();
+				}
+			}
+
+			/**
+			 * Advance the current item of this directory-iterator to the
+			 * next disk item. 
+			 * 
+			 * @pre		This directory-iterator must still have some remaining items.
+			 * 			| getNbRemainingItems() > 0
+			 * @post	The number of remaining disk items is decremented
+			 * 			by 1.
+			 * 			| new.getNbRemainingItems() == getNbRemainingItems() - 1
+			 * @post	If the current item before calling this method is the last item,
+			 * 			then this method sets the current item to the directory that
+			 * 			called this method
+			 * 			| if (getNbRemainingItems() == 1) {
+			 * 			| 		current = returnThis()
+			 * 			| }
+			 */
+			@Override
+			public void advance() {
+				if (getNbRemainingItems() > 1){
+					current = getItemAt(getIndexOf(current)+1);
+				}
+				else {
+					current = returnThis();
+				}
+			}
+
+			/**
+			 * Reset this directory-iterator to its first item.
+			 */
+			@Override
+			public void reset() {
+				current = getItemAt(1);
+			}
+			
+		};
+	}
+	
+	/********************************
+	 * extra methods
+	 ********************************
+	
+	/**
+	 * return the total disk usage from this directory, with every direct and indirect item
+	 * 
+	 * @return	the total disk usage
+	 * @throws 	IndexOutOfBoundsException
+	 * 			dirIt has no current item.
+	 * 			| getNbRemainingItems() == 0
+	 */
+	public long getTotalDiskUsage() throws IndexOutOfBoundsException {
+		DirectoryIterator dirIt = iterator();
+		long total = 0;
+		while (dirIt.getNbRemainingItems() != 0) {
+			if (dirIt.getCurrentItem() instanceof Directory){
+				Directory dir = (Directory)dirIt.getCurrentItem();
+				total += dir.getTotalDiskUsage();
+			}
+			else if (dirIt.getCurrentItem() instanceof File){
+				File file = (File)dirIt.getCurrentItem();
+				total += file.getSize();
+			}
+			dirIt.advance();
+		}
+		return total;
+	}
+	
+	/**
+	 * Terminates all items (direct and indirect) in this directory if they are all
+	 * writable.
+	 * 
+	 * @post	All items in this directory are terminated
+	 * 			| for all items in this {
+	 * 			|		item.isTerminated()
+	 * 			| }
+	 * @throws 	NotAllWritableException
+	 * 			Not all items in this directory are writable
+	 * 			| !this.allWritable()
+	 * @throws 	IllegalStateException
+	 * 			This item is not yet terminated and it can not be terminated.
+	 * 		   	| !isTerminated() && !canBeTerminated()
+	 */
+	public void deleteRecursive() throws NotAllWritableException, IllegalStateException {
+		if (this.allWritable() && this.canBeTerminated()){
+			DirectoryIterator dirIt = iterator();
+			while (dirIt.getNbRemainingItems() != 0){
+				if (dirIt.getCurrentItem() instanceof Directory){
+					Directory dir = (Directory)dirIt.getCurrentItem();
+					dir.deleteRecursive();
+					dir.terminate();
+				}
+				else {
+					dirIt.getCurrentItem().terminate();
+				}
+				dirIt.advance();
+			}
+		}
+		else {
+			throw new NotAllWritableException(this);
+		}
+	}
+	
+	/**
+	 * Return if all direct and indirect items are writable or not.
+	 * 
+	 * @return	true if and only if all direct and indirect items are writable,
+	 * 			false otherwise.
+	 * 			| result ==
+	 * 			| (for all items in this {
+	 * 			|		item.isWritable()
+	 * 			| })
+	 */
+	private boolean allWritable(){
+		DirectoryIterator dirIt = iterator();
+		if (!this.isWritable()){
+			return false;
+		}
+		boolean allWritable = true;
+		while (dirIt.getNbRemainingItems() != 0){
+			if (dirIt.getCurrentItem() instanceof Directory){
+				Directory dir = (Directory)dirIt.getCurrentItem();
+				if (!dir.isWritable()){
+					allWritable = false;
+				}
+				else if (!dir.allWritable()){
+					allWritable = false;
+				}
+			}
+			else if (dirIt.getCurrentItem() instanceof File){
+				File file = (File)dirIt.getCurrentItem();
+				if (!file.isWritable()){
+					allWritable = false;
+				}
+			}
+			dirIt.advance();
+		}
+		return allWritable;
 	}
 	
 }
