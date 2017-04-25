@@ -208,14 +208,16 @@ public class Directory extends DiskItem {
 	 */
 	@Raw
 	public boolean canHaveAsItem(@Raw Item item) {
-		if (item == null || item.isTerminated() || this.isTerminated()) return false;
-		if (item.isDirectOrIndirectParentOf(this)) return false;
+		if (item == null || item.isTerminated() || this.isTerminated()) 
+			return false;
+		if (item.isDirectOrIndirectParentOf(this)) 
+			return false;
 		if (this.hasAsItem(item)) {
 			int count = 0;
 			for (int position=1;position<=getNbItems();position++){
 				 if (item.getName().equalsIgnoreCase(getItemAt(position).getName())) count++;
 			}
-			return count == 1;
+			return (count == 1);
 		}else{
 			return (!this.containsItemWithName(item.getName()) && (item.isRoot() || item.getParentDirectory().isWritable())); 
 		}
