@@ -673,4 +673,103 @@ public class Directory extends DiskItem {
 		return (name != null && name.matches("[a-zA-Z_0-9-]+"));
 	}
 	
+	/**********************************
+	 * iterator
+	 **********************************
+	
+	/**
+	 * 
+	 */
+	public Directory returnThis(){
+		return this;
+	}
+	
+	/**
+	 * a directory-iterator to iterate over the elements in a directory
+	 * 
+	 */
+	public DirectoryIterator iterator() {
+		return new DirectoryIterator(){
+
+			/**
+			 * variable referencing to the current item
+			 * current is set to the directory that called the iterator when there are no
+			 * more items left to iterate
+			 */
+			private Item current = getItemAt(1);
+			
+			/**
+			 * Return the number of remaining disk items to be
+			 * returned by this directory-iterator, including
+			 * the current item.
+			 * 
+			 * @return	The resulting number cannot be negative.
+			 * 			| result >= 0 
+			 */
+			@Override
+			public int getNbRemainingItems() {
+				if (current == returnThis()) {
+					return 0;
+				}
+				else {
+					return getNbItems() - (getIndexOf(current) - 1);
+				}
+				
+			}
+			
+			/**
+			 * Return the current disk item of this directory-iterator.
+			 * 
+			 * @return	The current item
+			 * @throws	IndexOutOfBoundsException
+			 * 			This directory-iterator has no current item.
+			 * 			| getNbRemainingItems() == 0
+			 */
+			@Override
+			public Item getCurrentItem() throws IndexOutOfBoundsException {
+				if (getNbRemainingItems() != 0){
+					return current;
+				}
+				else {
+					throw new IndexOutOfBoundsException();
+				}
+			}
+
+			/**
+			 * Advance the current item of this directory-iterator to the
+			 * next disk item. 
+			 * 
+			 * @pre		This directory-iterator must still have some remaining items.
+			 * 			| getNbRemainingItems() > 0
+			 * @post	The number of remaining disk items is decremented
+			 * 			by 1.
+			 * 			| new.getNbRemainingItems() == getNbRemainingItems() - 1
+			 * @post	If the current item before calling this method is the last item,
+			 * 			then this method sets the current item to the directory that
+			 * 			called this method
+			 * 			| if (getNbRemainingItems() == 1) {
+			 * 			| 		current = returnThis()
+			 * 			| }
+			 */
+			@Override
+			public void advance() {
+				if (getNbRemainingItems() > 1){
+					current = getItemAt(getIndexOf(current)+1);
+				}
+				else {
+					current = returnThis();
+				}
+			}
+
+			/**
+			 * Reset this directory-iterator to its first item.
+			 */
+			@Override
+			public void reset() {
+				current = getItemAt(1);
+			}
+			
+		};
+	}
+	
 }
