@@ -63,7 +63,7 @@ public abstract class Item {
 	/**
 	 * Variable registering whether or not this item has been terminated.
 	 */
-	private boolean isTerminated = false;
+	protected boolean isTerminated = false;
 
 
 	/**
@@ -100,22 +100,7 @@ public abstract class Item {
 	 * 		   	This item is not yet terminated and it can not be terminated.
 	 * 		   	| !isTerminated() && !canBeTerminated()
 	 */
-	public void terminate() throws IllegalStateException {
-		if(!isTerminated()){
-			if (!canBeTerminated()) {
-				throw new IllegalStateException("This item cannot be terminated");
-			}
-			if(!isRoot()){
-				try{
-					makeRoot();
-				}catch(ItemNotWritableException e){
-					//should not happen since this item and its parent are writable
-					assert false;
-				}
-			}
-			this.isTerminated = true;
-		}
-	}	
+	public abstract void terminate() throws IllegalStateException;
 
 	/**********************************************************
 	 * name - total programming
@@ -443,22 +428,6 @@ public abstract class Item {
 	public boolean isWritable() {
 		return isWritable;
 	}
-
-	/**
-	 * Set the writability of this item to the given writability.
-	 *
-	 * @param 	isWritable
-	 *        	The new writability
-	 * @post  	The given writability is registered as the new writability
-	 *        	for this item.
-	 *        	| new.isWritable() == isWritable
-	 * @throws	ItemNotWritableException(this)
-	 * 			A directory that is not writable, can't be changed to writable
-	 * 			| (this.getClass() == Directory) && (!this.isWritable())
-	 */
-	@Raw 
-	protected abstract void setWritable(boolean isWritable)
-			throws ItemNotWritableException;
 	
 	/**********************************************************
 	 * parent directory
@@ -557,36 +526,6 @@ public abstract class Item {
 		}
 		setModificationTime();
 	}
-
-
-	/**
-	 * Turns this item in a root item if allowed.
-	 * 
-	 * @post    The item is a root item.
-	 *          | new.isRoot()
-	 * @effect  If this item is not a root, this item is
-	 *          removed from its parent directory.
-	 *          | if (!isRoot())
-	 *          | then getParentDirectory().removeAsItem(this)
-	 * @effect  If this item is not a root, its modification time changed
-	 * 			| if (!isRoot())
-	 *          | then setModificationTime()         
-	 * 
-	 * @throws	ItemNotWritableException(this)
-	 * 			This item is not a root and it is not writable
-	 * 			| !isRoot() && !isWritable()
-	 * @throws	ItemNotWritable(getParentDirectory())	
-	 * 			This item is not a root and its parent directory is not writable
-	 * 			| !isRoot() && !getParentDirectory().isWritable()
-	 * @throws 	IllegalStateException
-	 * 			This item is terminated
-	 * 			| isTerminated()
-	 * @throws	ItemCannotBeRootException(this)
-	 * 			This item is not a directory
-	 * 			| this.getClass() != Directory
-	 */ 
-	protected abstract void makeRoot()
-			throws ItemNotWritableException, ItemCannotBeRootException;
 
 	/**
 	 * Check whether this item is a root item.

@@ -95,4 +95,74 @@ public abstract class Link extends Item {
 			throw new IllegalStateException("Disk item is terminated!");
 		this.refDiskItem = refDiskItem;
 	}
+	
+	/**********************************************************
+	 * name - total programming
+	 **********************************************************/
+
+	/**
+	 * Check whether the name of this link can be changed into the
+	 * given name.
+	 * 
+	 * @return  True if this link is not terminated, the given 
+	 *          name is a valid name for the link, 
+	 *          the given name is different from the current name of this link
+	 *          and the parent directory does not 
+	 *          already contain an other item with the given name;
+	 *          false otherwise.
+	 *          | result == !isTerminated() && isValidName(name) && 
+	 *          |			!getName().equals(name) && !getParentDirectory().exists(name) )
+	 */
+	public boolean canAcceptAsNewName(String name) {
+		return !isTerminated() && isValidName(name) && !getName().equals(name) &&
+			 !getParentDirectory().exists(name);
+	}
+	
+	/**********************************************************
+	 * delete/termination
+	 **********************************************************/
+	
+	/**
+	 * Terminate this link.
+	 * 
+	 * @post 	This link is terminated.
+	 *       	| new.isTerminated()
+	 * @throws 	IllegalStateException
+	 * 		   	This link is not yet terminated and it can not be terminated.
+	 * 		   	| !isTerminated() && !canBeTerminated()
+	 */
+	public void terminate() throws IllegalStateException{
+		if(!isTerminated()){
+			if (!canBeTerminated()) {
+				throw new IllegalStateException("This item cannot be terminated");
+			}
+			this.isTerminated = true;
+		}
+	}
+	
+	/**
+	 * Check whether this item can be terminated.
+	 * 
+	 * @return	True if the item is not yet terminated, is writable and it is either a root or
+	 * 			its parent directory is writable
+	 * 			| if (isTerminated() || !getParentDirectory().isWritable()))
+	 */
+	public boolean canBeTerminated(){
+		return !isTerminated() && getParentDirectory().isWritable();
+	}
+	
+	/**********************************************************
+	 * parent directory
+	 **********************************************************/
+	
+	/**
+	 * Check whether this item is a root item.
+	 * 
+	 * @return  false, a link can never be a root item
+	 */
+	@Raw
+	public boolean isRoot() {
+		return false;
+	}
+	
 }

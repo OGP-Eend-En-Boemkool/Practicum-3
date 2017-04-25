@@ -113,4 +113,113 @@ public abstract class DiskItem extends Item{
 				(isRoot() || !getParentDirectory().exists(name));
 	}	
 
+	/**********************************************************
+	 * writable
+	 **********************************************************/
+	
+	/**
+	 * Set the writability of this item to the given writability.
+	 *
+	 * @param 	isWritable
+	 *        	The new writability
+	 * @post  	The given writability is registered as the new writability
+	 *        	for this item.
+	 *        	| new.isWritable() == isWritable
+	 * @throws	ItemNotWritableException(this)
+	 * 			A directory that is not writable, can't be changed to writable
+	 * 			| (this.getClass() == Directory) && (!this.isWritable())
+	 */
+	@Raw 
+	protected abstract void setWritable(boolean isWritable)
+			throws ItemNotWritableException;
+	
+	
+	/**********************************************************
+	 * parent directory
+	 **********************************************************/
+	
+	/**
+	 * Turns this item in a root item if allowed.
+	 * 
+	 * @post    The item is a root item.
+	 *          | new.isRoot()
+	 * @effect  If this item is not a root, this item is
+	 *          removed from its parent directory.
+	 *          | if (!isRoot())
+	 *          | then getParentDirectory().removeAsItem(this)
+	 * @effect  If this item is not a root, its modification time changed
+	 * 			| if (!isRoot())
+	 *          | then setModificationTime()         
+	 * 
+	 * @throws	ItemNotWritableException(this)
+	 * 			This item is not a root and it is not writable
+	 * 			| !isRoot() && !isWritable()
+	 * @throws	ItemNotWritable(getParentDirectory())	
+	 * 			This item is not a root and its parent directory is not writable
+	 * 			| !isRoot() && !getParentDirectory().isWritable()
+	 * @throws 	IllegalStateException
+	 * 			This item is terminated
+	 * 			| isTerminated()
+	 * @throws	ItemCannotBeRootException(this)
+	 * 			This item is not a directory
+	 * 			| this.getClass() != Directory
+	 */ 
+	protected abstract void makeRoot()
+			throws ItemNotWritableException, ItemCannotBeRootException;
+	
+	/**
+	 * Check whether this item is a root item.
+	 * 
+	 * @return  True if this item has a non-effective parent directory;
+	 *          false otherwise.
+	 *        	| result == (getParentDirectory() == null)
+	 */
+	@Raw
+	protected abstract boolean isRoot();
+	
+	/**********************************************************
+	 * delete/termination
+	 **********************************************************/
+	
+	/**
+	 * Terminate this disk item.
+	 * 
+	 * @post 	This disk item is terminated.
+	 *       	| new.isTerminated()
+	 * @effect 	If this disk item is not terminated and it is not a root, it is made a root
+	 * 			| if (!isTerminated() && !isRoot())  
+	 * 			| then makeRoot()
+	 * @throws 	IllegalStateException
+	 * 		   	This disk item is not yet terminated and it can not be terminated.
+	 * 		   	| !isTerminated() && !canBeTerminated()
+	 */
+	public void terminate() throws IllegalStateException{
+		if(!isTerminated()){
+			if (!canBeTerminated()) {
+				throw new IllegalStateException("This item cannot be terminated");
+			}
+			if(!isRoot()){
+				try{
+					makeRoot();
+				}catch(ItemNotWritableException e){
+					//should not happen since this item and its parent are writable
+					assert false;
+				}
+			}
+			this.isTerminated = true;
+		}
+	}
+	
+	/**
+	 * Check whether this item can be terminated.
+	 * 
+	 * @return	True if the item is not yet terminated, is writable and it is either a root or
+	 * 			its parent directory is writable
+	 * 			| if (isTerminated() || !isWritable() || (!isRoot() && !getParentDirectory().isWritable()))
+	 * 			| then result == false
+	 * @note	This specification must be left open s.t. the subclasses can change it
+	 */
+	public boolean canBeTerminated(){
+		return !isTerminated() && isWritable() && (isRoot() || getParentDirectory().isWritable());
+	}
 }
