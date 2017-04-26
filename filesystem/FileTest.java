@@ -144,4 +144,10 @@ public class FileTest {
 		assertEquals(name, fileDirectoryNameTypeSizeWritable.getName());
 	}
 	
+	@Test
+	public void testIsOrderedAfter(){
+		assertTrue(this.fileDirectoryNameType.isOrderedAfter(fileDirectoryNameTypeSizeWritable));
+		assertFalse(this.fileDirectoryNameTypeSizeWritable.isOrderedAfter(fileDirectoryNameType));
+	}
+	
 }
