@@ -44,7 +44,7 @@ public class DirectoryTest {
 		assertEquals("map3", this.dirDirectoryNameWritable.getName());
 		assertTrue(this.dirDirectoryNameWritable.canBeTerminated());
 		assertFalse(this.dirDirectoryNameWritable.isRoot());
-		assertTrue(this.dirDirectoryNameWritable.isWritable);
+		assertTrue(this.dirDirectoryNameWritable.isWritable());
 		assertNull(this.dirDirectoryNameWritable.getModificationTime());
 		assertFalse(timeBeforeConstruction.after(this.dirDirectoryNameWritable.getCreationTime()));
 		assertFalse(this.dirDirectoryNameWritable.getCreationTime().after(timeAfterConstruction));
@@ -186,6 +186,27 @@ public class DirectoryTest {
 		this.dirDirectoryName.terminate();
 		this.dirDirectoryName.makeRoot();
 		
+	}
+	
+	@Test (expected = ItemNotWritableException.class)
+	public void testMakeRoot_illegalCase2()
+			throws ItemNotWritableException, ItemCannotBeRootException {
+		Directory dir = new Directory(this.dirName, "dir", false);
+		dir.makeRoot();
+	}
+	
+	@Test (expected = ItemNotWritableException.class)
+	public void testMakeRoot_illegalCase3()
+			throws ItemNotWritableException, ItemCannotBeRootException {
+		Directory dir = new Directory(this.dirName, "dir");
+		dirName.setWritable(false);
+		dir.makeRoot();
+	}
+	
+	@Test
+	public void testGetTotalDiskUsage() throws IndexOutOfBoundsException {
+		File file = new File(this.dirNameWritable, "file", Type.JAVA, 200, true);
+		assertEquals(200, this.dirNameWritable.getTotalDiskUsage());
 	}
 	
 }
