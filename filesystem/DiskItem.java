@@ -40,7 +40,7 @@ public abstract class DiskItem extends Item{
 	 *          | new.getModificationTime() == null
 	 */
 	@Model
-	public DiskItem(String name, boolean writable) {
+	protected DiskItem(String name, boolean writable) {
 		super(name);
 		setWritable(writable);
 	}
@@ -85,7 +85,7 @@ public abstract class DiskItem extends Item{
 	 *         	|   !isValidName(name) && parent.containsItemWithName(getDefaultName())
 	 */
 	@Model
-	public DiskItem(Directory parent, String name, boolean writable) 
+	protected DiskItem(Directory parent, String name, boolean writable) 
 			throws IllegalArgumentException, ItemNotWritableException {
 		super(parent,name);
 		setWritable(writable);
