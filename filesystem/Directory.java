@@ -113,7 +113,34 @@ public class Directory extends DiskItem {
 		return getNbItems() == 0 && super.canBeTerminated();			
 	}
 
-	
+	/**
+	 * Terminate this directory.
+	 * 
+	 * @post 	This directory is terminated.
+	 *       	| new.isTerminated()
+	 * @effect 	If this directory is not terminated and it is not a root, it is made a root
+	 * 			| if (!isTerminated() && !isRoot())  
+	 * 			| then makeRoot()
+	 * @throws 	IllegalStateException
+	 * 		   	This directory is not yet terminated and it can not be terminated.
+	 * 		   	| !isTerminated() && !canBeTerminated()
+	 */
+	public void terminate() throws IllegalStateException{
+		if(!isTerminated()){
+			if (!canBeTerminated()) {
+				throw new IllegalStateException("This item cannot be terminated");
+			}
+			if(!isRoot()){
+				try{
+					makeRoot();
+				}catch(ItemNotWritableException e){
+					//should not happen since this item and its parent are writable
+					assert false;
+				}
+			}
+			this.isTerminated = true;
+		}
+	}
 	
 	
 	/**********************************************************
