@@ -215,11 +215,19 @@ public class Directory extends DiskItem {
 		if (this.hasAsItem(item)) {
 			int count = 0;
 			for (int position=1;position<=getNbItems();position++){
-				 if (item.getName().equalsIgnoreCase(getItemAt(position).getName())) count++;
+				 if (item.getName().equalsIgnoreCase(getItemAt(position).getName())){ 
+					 count++;}
 			}
 			return (count == 1);
 		}else{
-			return (!this.containsItemWithName(item.getName()) && (item.isRoot() || item.getParentDirectory().isWritable())); 
+			Directory parentDirectory = item.getParentDirectory();
+			if (parentDirectory == null){
+				return(!this.containsItemWithName(item.getName()));
+			}
+			else{
+			return (!this.containsItemWithName(item.getName()) && parentDirectory.isWritable());
+					
+			}
 		}
 	}
 	
@@ -655,8 +663,16 @@ public class Directory extends DiskItem {
 		else {
 			throw new ItemNotWritableException(this);
 		}
-		
 	}
+	
+	/**
+	 * Check whether this item is writable.
+	 */
+	@Raw @Basic
+	public boolean isWritable(){
+		return isWritable;
+	}
+	
 	
 	/*********************************
 	 * name
