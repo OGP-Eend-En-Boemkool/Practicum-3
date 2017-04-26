@@ -51,7 +51,7 @@ public abstract class Link extends Item {
 	 *          | parent != null && parent.isWritable() && 
 	 *         	|   !isValidName(name) && parent.containsDiskItemWithName(getDefaultName())
 	 */
-	public Link (String name, DiskItem refDiskItem, Directory parent)
+	protected Link (String name, DiskItem refDiskItem, Directory parent)
 			throws IllegalArgumentException, ItemNotWritableException{
 		super(parent, name);
 		setRefDiskItem(refDiskItem);		
@@ -74,7 +74,8 @@ public abstract class Link extends Item {
 		if (refDiskItem.isTerminated()){
 			throw new UnvalidLinkException(this);
 		}
-		return refDiskItem;
+		else{
+		return refDiskItem;}
 	}
 	
 	/**

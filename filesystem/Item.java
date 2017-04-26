@@ -29,11 +29,11 @@ public abstract class Item {
      * Constructors
      **********************************************************/
     
-	public Item(String name) {
+	protected Item(String name) {
 		setName(name);
 	}
 	
-	public Item(Directory parent, String name) throws IllegalArgumentException, ItemNotWritableException {
+	protected Item(Directory parent, String name) throws IllegalArgumentException, ItemNotWritableException {
 		if (parent == null) 
 			throw new IllegalArgumentException();
 		if (parent.isWritable() && isValidName(name) && parent.containsItemWithName(name))
@@ -162,7 +162,7 @@ public abstract class Item {
 	 *         	| isValidName(result)
 	 */
 	@Model
-	private static String getDefaultName() {
+	protected static String getDefaultName() {
 		return "new_item";
 	}
 
@@ -623,7 +623,7 @@ public abstract class Item {
 	 *      	|				  isDirectOrIndirectParentOf(item.getParentDirectory() )
 	 */
 	@Raw
-	public boolean isDirectOrIndirectParentOf(@Raw DiskItem item) {
+	public boolean isDirectOrIndirectParentOf(@Raw Item item) {
 		if(item == null) return false;
 		else return (this == item.getParentDirectory() || isDirectOrIndirectParentOf(item.getParentDirectory()));
 	}
