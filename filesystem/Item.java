@@ -29,11 +29,11 @@ public abstract class Item {
      * Constructors
      **********************************************************/
     
-	protected Item(String name) {
+	public Item(String name) {
 		setName(name);
 	}
 	
-	protected Item(Directory parent, String name) throws IllegalArgumentException, ItemNotWritableException {
+	public Item(Directory parent, String name) throws IllegalArgumentException, ItemNotWritableException {
 		if (parent == null) 
 			throw new IllegalArgumentException();
 		if (parent.isWritable() && isValidName(name) && parent.containsItemWithName(name))
@@ -425,9 +425,7 @@ public abstract class Item {
 	 * Check whether this item is writable.
 	 */
 	@Raw @Basic
-	public boolean isWritable() {
-		return isWritable;
-	}
+	public abstract boolean isWritable();
 	
 	/**********************************************************
 	 * parent directory
@@ -599,8 +597,15 @@ public abstract class Item {
 			return false;
 		if (this.isDirectOrIndirectParentOf(directory))
 			return false;
-		else return (directory.isWritable() && directory.canHaveAsItem(this) &&
-				(this.isRoot() || this.getParentDirectory().isWritable()) );
+		else{ 
+			Directory parentDirectory = this.getParentDirectory();
+			if (parentDirectory == null)
+				return (directory.isWritable) && directory.canHaveAsItem(this);
+			else{
+			return (directory.isWritable() && directory.canHaveAsItem(this) &&
+				this.getParentDirectory().isWritable()
+				);}
+		}
 	}
 
 	/**

@@ -298,6 +298,15 @@ public class File extends DiskItem{
 		this.isWritable = isWritable;
 	}
 	
+	/**
+	 * Check whether this item is writable.
+	 */
+	@Raw @Basic
+	public boolean isWritable(){
+		return isWritable;
+	}
+	
+	
 	/********************************
 	 * name
 	 ********************************

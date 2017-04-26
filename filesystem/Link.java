@@ -165,4 +165,16 @@ public abstract class Link extends Item {
 		return false;
 	}
 	
+	/**********************************************************
+	 * writable
+	 **********************************************************/
+	
+	/**
+	 * Check whether this item is writable.
+	 */
+	@Raw @Basic
+	public boolean isWritable(){
+		return true;
+	
+	}
 }
