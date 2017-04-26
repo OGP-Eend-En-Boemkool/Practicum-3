@@ -1,3 +1,4 @@
+
 package filesystem;
 
 import java.util.*;
@@ -29,11 +30,11 @@ public abstract class Item {
      * Constructors
      **********************************************************/
     
-	protected Item(String name) {
+	public Item(String name) {
 		setName(name);
 	}
 	
-	protected Item(Directory parent, String name) throws IllegalArgumentException, ItemNotWritableException {
+	public Item(Directory parent, String name) throws IllegalArgumentException, ItemNotWritableException {
 		if (parent == null) 
 			throw new IllegalArgumentException();
 		if (parent.isWritable() && isValidName(name) && parent.containsItemWithName(name))
@@ -162,7 +163,7 @@ public abstract class Item {
 	 *         	| isValidName(result)
 	 */
 	@Model
-	protected static String getDefaultName() {
+	private static String getDefaultName() {
 		return "new_item";
 	}
 
@@ -623,7 +624,7 @@ public abstract class Item {
 	 *      	|				  isDirectOrIndirectParentOf(item.getParentDirectory() )
 	 */
 	@Raw
-	public boolean isDirectOrIndirectParentOf(@Raw Item item) {
+	public boolean isDirectOrIndirectParentOf(@Raw DiskItem item) {
 		if(item == null) return false;
 		else return (this == item.getParentDirectory() || isDirectOrIndirectParentOf(item.getParentDirectory()));
 	}
@@ -664,3 +665,4 @@ public abstract class Item {
 		return parentDirectory;
 	}
 }
+
