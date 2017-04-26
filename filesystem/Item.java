@@ -514,7 +514,7 @@ public abstract class Item {
 		setParentDirectory(target); 
 		try{
 			target.addAsItem(this); //this is a raw item because it's not yet registered in the new parent
-									//so the formal argument of assAsItem should be annotated @Raw
+									//so the formal argument of addAsItem should be annotated @Raw
 		}catch(IllegalArgumentException e){
 			//this should not happen, because it can have this item
 			assert false;
