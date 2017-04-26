@@ -664,5 +664,40 @@ public abstract class Item {
 	public Directory getParentDirectory() {
 		return parentDirectory;
 	}
+	
+	/***********************************
+	 * extra method
+	 ***********************************
+	 
+	 /**
+	  * Return a string with the absolute path from this item.
+	  * 
+	  * @return	String with absolute path from this item.
+	  * 			| for all parentdirectories from this {
+	  * 			|		return = / + parentDirectory.getName() + / + this.getName()
+	  * 			| }
+	  */
+	 	public String getAbsolutePath(){
+	 		String path;
+	 		if (this.isRoot()){
+	 			path = "/" + this.getName(); 
+	 		}
+	 		else {
+	 			if (this instanceof File){
+	 				File file = (File)this;
+	 				path = "/" + this.getName() + "." + file.getType().getExtension();
+	 			}
+	 			else {
+	 				path = "/" + this.getName();
+	 			}
+	 			Directory dir = this.getParentDirectory();
+	 			while (this.getRoot() != dir){
+	 				path = "/" + dir.getName() + path;
+	 				dir = dir.getParentDirectory();
+	 			}
+	 			path = "/" + this.getRoot().getName() + path;
+	 		}
+	 		return path;
+	 	}
 }
 

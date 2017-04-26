@@ -188,4 +188,135 @@ public class DirectoryTest {
 		
 	}
 	
+	@Test
+	public void testCanAcceptAsNewName_legalCase() {
+		assertTrue(dirNameWritable.canAcceptAsNewName("eend"));
+	}
+	
+	@Test
+	public void testCanAcceptAsNewName_illegalCase() {
+		assertFalse(dirNameWritable.canAcceptAsNewName("€€nd"));
+		assertFalse(dirNotWritable.canAcceptAsNewName("eend"));
+	}
+
+	@Test (expected = IllegalStateException.class)
+	public void testChangeName_illegalCase1()
+			throws ItemNotWritableException, IllegalStateException {
+		this.dirNameWritable.terminate();
+		this.dirNameWritable.changeName("Olaf");
+	}
+	
+	@Test (expected = ItemNotWritableException.class)
+	public void testChangeName_illegalCase2()
+			throws ItemNotWritableException, IllegalStateException {
+		this.dirNotWritable.changeName("Olaf");
+	}
+	
+	@Test
+	public void testChangeName_illegalCase3()
+			throws ItemNotWritableException, IllegalStateException {
+		String name = this.dirNameWritable.getName();
+		this.dirName.changeName("$dollar$");
+		assertEquals(name, dirNameWritable.getName());
+	}
+	
+	@Test
+	public void testIsOrderedAfter(){
+		assertTrue(this.dirDirectoryName.isOrderedAfter(dirDirectoryNameWritable));
+		assertFalse(this.dirDirectoryNameWritable.isOrderedAfter(dirDirectoryName));
+		assertTrue(this.dirDirectoryName.isOrderedAfter("bestand1"));
+	}
+	
+	@Test
+	public void testIsOrderedBefore(){
+		assertFalse(this.dirDirectoryName.isOrderedBefore(dirDirectoryNameWritable));
+		assertTrue(this.dirDirectoryNameWritable.isOrderedBefore(dirDirectoryName));
+		assertFalse(this.dirDirectoryName.isOrderedBefore("bestand1"));
+		assertFalse(this.dirDirectoryNameWritable.isOrderedBefore("bestand2"));
+	}
+	
+	@Test
+	public void testHasOverlappingUsePeriod_UnmodifiedFiles(){
+		File one = new File(dirDirectoryName, "one", Type.PDF);
+		sleep();
+		File other = new File(dirDirectoryName, "other", Type.JAVA);
+		
+		assertFalse(one.hasOverlappingUsePeriod(other));
+		
+		other.changeName("newNameOther");
+		assertFalse(one.hasOverlappingUsePeriod(other));
+		
+		other = new File(dirDirectoryName, "other", Type.JAVA);
+		one.changeName("newNameOne");
+		assertFalse(one.hasOverlappingUsePeriod(other));	
+	}
+	
+	@Test
+	public void testMove_legalCase()
+			throws IllegalArgumentException, ItemNotWritableException, IllegalStateException {
+		Directory dir;
+		dir = new Directory("dir");
+		this.dirDirectoryName.move(dir);
+		assertEquals(dir, this.dirDirectoryName.getParentDirectory());
+	}
+	
+	@Test (expected = IllegalStateException.class)
+	public void testMove_illegalCase1()
+			throws IllegalArgumentException, ItemNotWritableException, IllegalStateException {
+		Directory dir = new Directory("dir");
+		this.dirDirectoryName.terminate();
+		this.dirDirectoryName.move(dir);
+	}
+	
+	@Test (expected = IllegalArgumentException.class)
+	public void testMove_illegalCase2()
+			throws IllegalArgumentException, ItemNotWritableException, IllegalStateException {
+		Directory dir = null;
+		this.dirDirectoryName.move(dir);
+	}
+	
+	@Test (expected = IllegalArgumentException.class)
+	public void testMove_illegalCase3()
+			throws IllegalArgumentException, ItemNotWritableException, IllegalStateException {
+		this.dirDirectoryName.move(dirName);
+	}
+	
+	@Test (expected = ItemNotWritableException.class)
+	public void testMove_illegalCase4()
+			throws IllegalArgumentException, ItemNotWritableException, IllegalStateException {
+		Directory dir = new Directory("dir");
+		this.dirNotWritable.move(dir);
+	}
+	
+	@Test (expected = ItemNotWritableException.class)
+	public void testMove_illegalCase5()
+			throws IllegalArgumentException, ItemNotWritableException, IllegalStateException {
+		Directory dir = new Directory("dir", false);
+		this.dirNotWritable.move(dir);
+	}
+	
+	@Test
+	public void testHasProperParentDirectory(){
+		assertTrue(this.dirDirectoryName.hasProperParentDirectory());
+	}
+	
+	@Test
+	public void testCanHaveAsParentDirectory(){
+		Directory dir = new Directory("dir");
+		assertTrue(this.dirDirectoryName.canHaveAsParentDirectory(dir));
+	}
+	
+	@Test
+	public void testIsDirectOrIndirectParentOf(){
+		assertFalse(this.dirDirectoryName.isDirectOrIndirectParentOf(dirDirectoryNameWritable));
+	}
+	
+	private void sleep() {
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+	
 }
