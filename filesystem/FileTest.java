@@ -41,7 +41,7 @@ public class FileTest {
 		timeAfterConstructionNotWritable = new Date();
 	}
 	
-	@Test 
+	@Test
 	public void testFileDirectoryNameTypeSizeWritable_legalCase() {
 		assertEquals("bestand.txt",fileDirectoryNameTypeSizeWritable.getName());
 		assertEquals("txt",fileDirectoryNameTypeSizeWritable.getType());
@@ -51,5 +51,6 @@ public class FileTest {
 		assertFalse(timeBeforeConstruction.after(fileDirectoryNameTypeSizeWritable.getCreationTime()));
 		assertFalse(fileDirectoryNameTypeSizeWritable.getCreationTime().after(timeAfterConstruction));
 	}
+	
 	
 }

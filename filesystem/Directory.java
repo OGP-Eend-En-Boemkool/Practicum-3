@@ -222,6 +222,8 @@ public class Directory extends DiskItem {
 			return (!this.containsItemWithName(item.getName()) && (item.isRoot() || item.getParentDirectory().isWritable())); 
 		}
 	}
+	
+	
 
 	/**
 	 * Check whether this directory can have the given item at the given index.
