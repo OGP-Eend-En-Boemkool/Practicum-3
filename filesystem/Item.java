@@ -29,11 +29,11 @@ public abstract class Item {
      * Constructors
      **********************************************************/
     
-	protected Item(String name) {
+	public Item(String name) {
 		setName(name);
 	}
 	
-	protected Item(Directory parent, String name) throws IllegalArgumentException, ItemNotWritableException {
+	public Item(Directory parent, String name) throws IllegalArgumentException, ItemNotWritableException {
 		if (parent == null) 
 			throw new IllegalArgumentException();
 		if (parent.isWritable() && isValidName(name) && parent.containsItemWithName(name))
@@ -425,9 +425,7 @@ public abstract class Item {
 	 * Check whether this item is writable.
 	 */
 	@Raw @Basic
-	public boolean isWritable() {
-		return isWritable;
-	}
+	public abstract boolean isWritable();
 	
 	/**********************************************************
 	 * parent directory
@@ -599,8 +597,15 @@ public abstract class Item {
 			return false;
 		if (this.isDirectOrIndirectParentOf(directory))
 			return false;
-		else return (directory.isWritable() && directory.canHaveAsItem(this) &&
-				(this.isRoot() || this.getParentDirectory().isWritable()) );
+		else{ 
+			Directory parentDirectory = this.getParentDirectory();
+			if (parentDirectory == null)
+				return (directory.isWritable) && directory.canHaveAsItem(this);
+			else{
+			return (directory.isWritable() && directory.canHaveAsItem(this) &&
+				this.getParentDirectory().isWritable()
+				);}
+		}
 	}
 
 	/**
@@ -643,7 +648,7 @@ public abstract class Item {
 	protected void setParentDirectory(Directory parentDirectory)
 			throws IllegalArgumentException, IllegalStateException {
 		if ( isTerminated()) 
-			throw new IllegalStateException("Item is terminated!");
+			throw new IllegalStateException("Disk item is terminated!");
 		if (!canHaveAsParentDirectory(parentDirectory)) {
 			throw new IllegalArgumentException("Inappropriate item!");
 		}
@@ -657,40 +662,5 @@ public abstract class Item {
 	@Raw @Basic
 	public Directory getParentDirectory() {
 		return parentDirectory;
-	}
-	
-	/***********************************
-	 * extra method
-	 ***********************************
-	
-	/**
-	 * Return a string with the absolute path from this item.
-	 * 
-	 * @return	String with absolute path from this item.
-	 * 			| for all parentdirectories from this {
-	 * 			|		return = / + parentDirectory.getName() + / + this.getName()
-	 * 			| }
-	 */
-	public String getAbsolutePath(){
-		String path;
-		if (this.isRoot()){
-			path = "/" + this.getName(); 
-		}
-		else {
-			if (this instanceof File){
-				File file = (File)this;
-				path = "/" + this.getName() + "." + file.getType().getExtension();
-			}
-			else {
-				path = "/" + this.getName();
-			}
-			Directory dir = this.getParentDirectory();
-			while (this.getRoot() != dir){
-				path = "/" + dir.getName() + path;
-				dir = dir.getParentDirectory();
-			}
-			path = "/" + this.getRoot().getName() + path;
-		}
-		return path;
 	}
 }
