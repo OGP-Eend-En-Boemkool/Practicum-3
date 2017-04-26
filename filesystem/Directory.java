@@ -666,6 +666,7 @@ public class Directory extends DiskItem {
 		return getParentDirectory() == null;
 	}
 	
+	
 	/*********************************
 	 * writable
 	 *********************************
