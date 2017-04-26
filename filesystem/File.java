@@ -83,7 +83,7 @@ public class File extends DiskItem{
 	*          | result.equals(getName()+"."+getType().getExtension())
 	*/    
     public String toString(){
-    	  return getName()+"."+getType().getExtension();
+    	  return getName() + "." + getType().getExtension();
     }
     
 	
@@ -104,6 +104,41 @@ public class File extends DiskItem{
     public boolean canBeTerminated(){
     	// no additional implementation required
 		return super.canBeTerminated();
+	}
+    
+    /**
+	 * Terminate this file.
+	 * 
+	 * @post 	This file is terminated.
+	 *       	| new.isTerminated()
+	 * @effect 	If this file is not terminated, it is removed from its parent directory
+	 * 			and its parent directory is set to null
+	 * 			| if !isTerminated()  
+	 * 			| then 	{	getParentDirectory().removeAsItem(this)
+	 *			|			setParentDirectory(null) 
+	 *			|		}
+	 * @throws 	IllegalStateException
+	 * 		   	This file is not yet terminated and it can not be terminated.
+	 * 		   	| !isTerminated() && !canBeTerminated()
+	 */
+	public void terminate() throws IllegalStateException{
+		if(!isTerminated()){
+			if (!canBeTerminated()) {
+				throw new IllegalStateException("This item cannot be terminated");
+			}
+			else {
+				try{
+					Directory dir = getParentDirectory();
+					setParentDirectory(null); 
+					//this item is now in a raw state
+					dir.removeAsItem(this);
+				}catch(ItemNotWritableException e){
+					//should not happen since this item and its parent are writable
+					assert false;
+				}
+			}
+			this.isTerminated = true;
+		}
 	}
     
     
